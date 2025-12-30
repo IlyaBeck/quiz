@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f472b6">
+    <title>Quiz 💗</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body
+        id="body"
+        class="bg-gradient-to-br from-pink-100 to-rose-200 min-h-screen flex items-center justify-center px-4 transition-colors duration-300"
+>
+
+<!-- Theme toggle -->
+<button
+        id="themeToggle"
+        class="fixed top-4 right-4 bg-white/70 backdrop-blur text-pink-600 px-3 py-2 rounded-full shadow hover:bg-white transition text-sm"
+>
+    🌙
+</button>
+
+<div
+        id="card"
+        class="bg-white text-slate-900 shadow-xl rounded-2xl max-w-md w-full p-6 text-center transition-all duration-300"
+>
+    <div id="progress" class="text-sm text-slate-500 mb-2"></div>
+
+    <h1 id="title" class="text-2xl font-bold mb-4"></h1>
+
+    <p id="content" class="text-slate-700 text-lg mb-4"></p>
+
+    <p id="hint" class="text-sm text-pink-600 italic mb-6 hidden"></p>
+
+    <div class="space-y-3">
+        <button
+                id="next"
+                class="bg-pink-400 hover:bg-pink-500 text-white font-semibold px-6 py-3 rounded-xl transition w-full"
+        >
+            Next →
+        </button>
+
+        <button
+                id="hintBtn"
+                class="border border-pink-300 text-pink-500 hover:bg-pink-50 font-medium px-6 py-2 rounded-xl transition w-full hidden"
+        >
+            💡 Подсказка
+        </button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+    const steps = [
+        {
+            title: "🖖 Привет",
+            text: "Похоже, ты любишь викторины. Вот еще одна для тебя! Перед тобой 4 коробочки. Когда какую открыть — будет указано здесь 💗",
+            button: "Да прочитала я правила уже →"
+        },
+        {
+            title: "📦 Действуй!",
+            text: "Открывай 🎁 коробочку #1",
+            button: "Ну открыла →"
+        },
+        {
+            title: "🎁 Коробочка #1",
+            text: "Это фея красоты 🧚 Она в цветовой гамме чего-то, чего ты просила на Новый год.",
+            hint: "Можешь поискать в телеге в нашей переписке!",
+            button: "Я угадала →"
+        },
+        {
+            title: "🎁 Коробочка #2",
+            text: "Открывай коробочку #2 и опиши ситуацию, которую она тебе напоминает.",
+            hint: "Жара, тебе приходит гениальная идея освежиться, но получается как у минифигурки ✂️",
+            button: "Я угадала →"
+        },
+        {
+            title: "🎁 Коробочка #2",
+            text: "Супер! Эта фигурка — твой билет на стрижку (или стрижки) в новом году 💇‍♀️",
+            button: "Что дальше?! →"
+        },
+        {
+            title: "🎁 Коробочка #3",
+            text: "Открывай коробочку #3 и опиши воспоминания. Что происходило по утрам?",
+            hint: "Раннее утро, кафешка с зеленой тётей, ведро того самого...",
+            button: "Муж сказал, что я угадала →"
+        },
+        {
+            title: "🎁 Коробочка #4",
+            text: "Открывай коробочку #4. Есть идеи, что это значит?",
+            hint: "Это про тебя и маленькие радости ❤️",
+            button: "И что это? →"
+        },
+        {
+            title: "🏆 С Новым годом, любовь моя!",
+            text: "Это ты — красивая и желающая вкусный кофе из кафе на углу ☕❤️ Предъявляя эту фигурку в новом году — твой муж будет бежать тебе за вкусным напитком.",
+            confetti: true
+        }
+    ];
+
+    let current = 0;
+    let confettiFired = false;
+
+    const body = document.getElementById("body");
+    const card = document.getElementById("card");
+    const themeToggle = document.getElementById("themeToggle");
+
+    const titleEl = document.getElementById("title");
+    const contentEl = document.getElementById("content");
+    const progressEl = document.getElementById("progress");
+    const nextBtn = document.getElementById("next");
+    const hintBtn = document.getElementById("hintBtn");
+    const hintEl = document.getElementById("hint");
+
+    function fireConfetti() {
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    }
+
+    function render() {
+        const step = steps[current];
+        card.classList.add("opacity-0");
+
+        setTimeout(() => {
+            titleEl.textContent = step.title;
+            contentEl.textContent = step.text;
+
+            progressEl.textContent =
+                current < steps.length - 1
+                    ? `Шаг ${current + 1} из ${steps.length - 1}`
+                    : "";
+
+            if (step.button) {
+                nextBtn.textContent = step.button;
+                nextBtn.style.display = "block";
+            } else {
+                nextBtn.style.display = "none";
+            }
+
+            if (step.hint) {
+                hintEl.textContent = step.hint;
+                hintEl.classList.add("hidden");
+                hintBtn.classList.remove("hidden");
+            } else {
+                hintBtn.classList.add("hidden");
+                hintEl.classList.add("hidden");
+            }
+
+            if (step.confetti && !confettiFired) {
+                confettiFired = true;
+                setTimeout(fireConfetti, 300);
+            }
+
+            card.classList.remove("opacity-0");
+        }, 300);
+    }
+
+    // 🌙 Dark mode logic
+    function setDarkMode(enabled) {
+        if (enabled) {
+            body.className =
+                "bg-gradient-to-br from-slate-900 to-rose-900 min-h-screen flex items-center justify-center px-4 transition-colors duration-300";
+
+            card.classList.remove("bg-white", "text-slate-900");
+            card.classList.add("bg-slate-900", "text-slate-100");
+
+            contentEl.classList.remove("text-slate-700");
+            contentEl.classList.add("text-slate-200");
+
+            progressEl.classList.remove("text-slate-500");
+            progressEl.classList.add("text-slate-400");
+
+            themeToggle.textContent = "☀️";
+        } else {
+            body.className =
+                "bg-gradient-to-br from-pink-100 to-rose-200 min-h-screen flex items-center justify-center px-4 transition-colors duration-300";
+
+            card.classList.remove("bg-slate-900", "text-slate-100");
+            card.classList.add("bg-white", "text-slate-900");
+
+            contentEl.classList.remove("text-slate-200");
+            contentEl.classList.add("text-slate-700");
+
+            progressEl.classList.remove("text-slate-400");
+            progressEl.classList.add("text-slate-500");
+
+            themeToggle.textContent = "🌙";
+        }
+
+        localStorage.setItem("darkMode", enabled);
+    }
+
+
+    themeToggle.addEventListener("click", () => {
+        const isDark = localStorage.getItem("darkMode") === "true";
+        setDarkMode(!isDark);
+    });
+
+    // Init theme
+    setDarkMode(localStorage.getItem("darkMode") === "true");
+
+    nextBtn.addEventListener("click", () => {
+        current++;
+        render();
+    });
+
+    hintBtn.addEventListener("click", () => {
+        hintEl.classList.toggle("hidden");
+    });
+
+    render();
+</script>
+</body>
+</html>
